@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import edgehandles from "cytoscape-edgehandles";
 import cytoscape from "cytoscape";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -61,8 +61,7 @@ const Cytoscape = () => {
     cs.edges().on("click", function (e) {
       var ele = e.target;
       const setPostionOfCircle = document.querySelector("#remveEdge");
-      setPostionOfCircle.style.color = "blue";
-
+      setPostionOfCircle.style.display = "block";
       const bbCache = ele.boundingBox();
       const x = (bbCache.x1 + bbCache.x2) / 2;
       const y = (bbCache.y1 + bbCache.y2) / 2;
@@ -100,6 +99,7 @@ const Cytoscape = () => {
     // ==> remove edge on icon click;
     document.querySelector("#remveEdge").addEventListener("click", () => {
       cs.edges(":selected").remove();
+      document.querySelector("#remveEdge").style.display = "none";
     });
 
     cs.nodes().positions(function (ele, i) {
@@ -111,21 +111,19 @@ const Cytoscape = () => {
 
   return (
     <>
-      <div style={{  width:"100vw", height:"100vh", position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
-        <div
-          id="cs"
-          style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            bottom: 0,
-            right: 0,
-            zIndex: 999,
-            border: "2px solid red",
-          }}
-        >
-          {" "}
-        </div>
+      <div
+        id="cs"
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          bottom: 0,
+          right: 0,
+          zIndex: 999,
+          border: "2px solid red",
+        }}
+      >
+        {" "}
       </div>
 
       <FontAwesomeIcon
@@ -135,6 +133,7 @@ const Cytoscape = () => {
           color: "red",
           position: "absolute",
           zIndex: 9999,
+          display:"none"
         }}
         id="remveEdge"
       />
@@ -147,6 +146,7 @@ const Cytoscape = () => {
           top: 0,
           zIndex: 99999,
           margin: "1em",
+
         }}
       >
         <button style={{ margin: "10px" }} id="draw-on">
