@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import edgehandles from "cytoscape-edgehandles";
 import cytoscape from "cytoscape";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -6,6 +6,31 @@ import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
 cytoscape.use(edgehandles);
 const Cytoscape = () => {
+  const [elements, setElement] = useState({
+    nodes: [
+      { data: { id: "a", name: "Dilshad" } },
+      { data: { id: "b" } },
+      { data: { id: "c" } },
+      { data: { id: "d" } },
+      { data: { id: "e" } },
+      { data: { id: "f" } },
+      { data: { id: "g" } },
+      { data: { id: "h" } },
+      { data: { id: "l" } },
+      { data: { id: "Z" } },
+      { data: { id: "M" } },
+    ],
+    edges: [
+      { data: { source: "a", target: "e" } },
+      { data: { source: "b", target: "f" } },
+      { data: { source: "c", target: "g" } },
+      { data: { source: "d", target: "h" } },
+      { data: { source: "e", target: "l" } },
+      { data: { source: "h", target: "Z" } },
+      { data: { source: "a", target: "M" } },
+    ],
+  });
+
   useEffect(() => {
     const cs = cytoscape(
       {
@@ -15,31 +40,7 @@ const Cytoscape = () => {
         layout: {
           name: "random", // Use preset layout for manual positioning
         },
-        elements: {
-          nodes: [
-            { data: { id: "a", name: "Dilshad" } },
-            { data: { id: "b" } },
-            { data: { id: "c" } },
-            { data: { id: "d" } },
-            { data: { id: "e" } },
-            { data: { id: "f" } },
-            { data: { id: "g" } },
-            { data: { id: "h" } },
-            { data: { id: "l" } },
-            { data: { id: "Z" } },
-            { data: { id: "M" } },
-          ],
-          edges: [
-            { data: { source: "a", target: "e" } },
-            { data: { source: "b", target: "f" } },
-            { data: { source: "c", target: "g" } },
-            { data: { source: "d", target: "h" } },
-            { data: { source: "e", target: "l" } },
-            { data: { source: "h", target: "Z" } },
-            { data: { source: "a", target: "M" } },
-          ],
-        },
-
+        elements: elements,
         style: [
           {
             selector: "node", // Apply these styles to all nodes
@@ -70,23 +71,12 @@ const Cytoscape = () => {
       setPostionOfCircle.style.left = x + "px";
       setPostionOfCircle.style.top = y + "px";
       setPostionOfCircle.style.color = "blue";
-
-      console.log("clicked " + ele.id(), ele);
+      console.log("clicked " + ele.id(), ele, elements);
     });
 
     document.querySelector("#draw-on").addEventListener("click", () => {
       eh.enableDrawMode();
     });
-
-    // for removing edge and node both
-
-    // document.querySelector("#remove-edge").addEventListener("click", () => {
-    //   eh.disableDrawMode();
-    //   const selectedNode = cs.$(":selected");
-    //   if (selectedNode.nonempty()) {
-    //     selectedNode.remove();
-    //   }
-    // });
 
     //for removing only edge
     document.querySelector("#remove-edge").addEventListener("click", () => {
@@ -107,7 +97,7 @@ const Cytoscape = () => {
       const row = Math.floor(i / 4);
       return { x: col * 100, y: row * 100 };
     });
-  });
+  }, [elements]);
 
   return (
     <>
@@ -122,9 +112,7 @@ const Cytoscape = () => {
           zIndex: 999,
           border: "2px solid red",
         }}
-      >
-        {" "}
-      </div>
+      ></div>
 
       <FontAwesomeIcon
         icon={faCircleXmark}
@@ -133,7 +121,7 @@ const Cytoscape = () => {
           color: "red",
           position: "absolute",
           zIndex: 9999,
-          display:"none"
+          display: "none",
         }}
         id="remveEdge"
       />
@@ -146,7 +134,6 @@ const Cytoscape = () => {
           top: 0,
           zIndex: 99999,
           margin: "1em",
-
         }}
       >
         <button style={{ margin: "10px" }} id="draw-on">
