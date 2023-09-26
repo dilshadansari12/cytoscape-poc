@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import edgehandles from "cytoscape-edgehandles";
 import cytoscape from "cytoscape";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
 cytoscape.use(edgehandles);
 const Cytoscape = () => {
@@ -8,6 +10,8 @@ const Cytoscape = () => {
     const cs = cytoscape(
       {
         container: document.getElementById("cs"),
+        // userPanningEnabled: false, //useTo stop move
+        userZoomingEnabled: false,
         layout: {
           name: "random", // Use preset layout for manual positioning
         },
@@ -56,6 +60,18 @@ const Cytoscape = () => {
 
     cs.edges().on("click", function (e) {
       var ele = e.target;
+      const setPostionOfCircle = document.querySelector("#remveEdge");
+      setPostionOfCircle.style.color = "blue";
+
+      const bbCache = ele.boundingBox();
+      const x = (bbCache.x1 + bbCache.x2) / 2;
+      const y = (bbCache.y1 + bbCache.y2) / 2;
+
+      // Set position of the circle
+      setPostionOfCircle.style.left = x + "px";
+      setPostionOfCircle.style.top = y + "px";
+      setPostionOfCircle.style.color = "blue";
+
       console.log("clicked " + ele.id(), ele);
     });
 
@@ -81,6 +97,11 @@ const Cytoscape = () => {
       cs.edges(":selected").remove();
     });
 
+    // ==> remove edge on icon click;
+    document.querySelector("#remveEdge").addEventListener("click", () => {
+      cs.edges(":selected").remove();
+    });
+
     cs.nodes().positions(function (ele, i) {
       const col = i % 4;
       const row = Math.floor(i / 4);
@@ -89,22 +110,34 @@ const Cytoscape = () => {
   });
 
   return (
-    <div>
-      <h1>cytoscape-demo</h1>
-      <div
-        id="cs"
-        style={{
-          position: "absolute",
-          left: "40%",
-          top: "20%",
-          bottom: 0,
-          right: 0,
-          zIndex: 999,
-          border:"2px solid red"
-        }}
-      >
-        {" "}
+    <>
+      <div style={{  width:"100vw", height:"100vh", position:"relative", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <div
+          id="cs"
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            right: 0,
+            zIndex: 999,
+            border: "2px solid red",
+          }}
+        >
+          {" "}
+        </div>
       </div>
+
+      <FontAwesomeIcon
+        icon={faCircleXmark}
+        style={{
+          fontSize: "25px",
+          color: "red",
+          position: "absolute",
+          zIndex: 9999,
+        }}
+        id="remveEdge"
+      />
 
       <div
         id="buttons"
@@ -121,7 +154,7 @@ const Cytoscape = () => {
         </button>
         <button id="remove-edge">remove edges</button>
       </div>
-    </div>
+    </>
   );
 };
 
