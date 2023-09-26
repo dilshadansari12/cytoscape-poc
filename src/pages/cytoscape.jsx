@@ -6,30 +6,29 @@ import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
 cytoscape.use(edgehandles);
 const Cytoscape = () => {
-  const [elements, setElement] = useState({
-    nodes: [
-      { data: { id: "a", name: "Dilshad" } },
-      { data: { id: "b" } },
-      { data: { id: "c" } },
-      { data: { id: "d" } },
-      { data: { id: "e" } },
-      { data: { id: "f" } },
-      { data: { id: "g" } },
-      { data: { id: "h" } },
-      { data: { id: "l" } },
-      { data: { id: "Z" } },
-      { data: { id: "M" } },
-    ],
-    edges: [
-      { data: { source: "a", target: "e" } },
-      { data: { source: "b", target: "f" } },
-      { data: { source: "c", target: "g" } },
-      { data: { source: "d", target: "h" } },
-      { data: { source: "e", target: "l" } },
-      { data: { source: "h", target: "Z" } },
-      { data: { source: "a", target: "M" } },
-    ],
-  });
+  const [nodes, setnodes] = useState([
+    { data: { id: "a", name: "Dilshad" } },
+    { data: { id: "b" } },
+    { data: { id: "c" } },
+    { data: { id: "d" } },
+    { data: { id: "e" } },
+    { data: { id: "f" } },
+    { data: { id: "g" } },
+    { data: { id: "h" } },
+    { data: { id: "l" } },
+    { data: { id: "Z" } },
+    { data: { id: "M" } },
+  ]);
+
+  const [edges, setEdge] = useState([
+    { data: { source: "a", target: "e" } },
+    { data: { source: "b", target: "f" } },
+    { data: { source: "c", target: "g" } },
+    { data: { source: "d", target: "h" } },
+    { data: { source: "e", target: "l" } },
+    { data: { source: "h", target: "Z" } },
+    { data: { source: "a", target: "M" } },
+  ]);
 
   useEffect(() => {
     const cs = cytoscape(
@@ -38,9 +37,12 @@ const Cytoscape = () => {
         // userPanningEnabled: false, //useTo stop move
         userZoomingEnabled: false,
         layout: {
-          name: "random", // Use preset layout for manual positioning
+          name: "grid", // Use preset layout for manual positioning
         },
-        elements: elements,
+        elements: {
+          nodes: nodes,
+          edges: edges,
+        },
         style: [
           {
             selector: "node", // Apply these styles to all nodes
@@ -51,13 +53,41 @@ const Cytoscape = () => {
               label: "data(id)",
             },
           },
+
+          {
+            selector: 'edge',
+            style: {
+              'curve-style': "straight" , // select style
+              'target-arrow-shape': "triangle" // arrow
+            }
+          },
+
+          {
+            selector: '.eh-preview, .eh-ghost-edge',
+            style: {
+              'background-color': 'red',
+              'line-color': 'red',
+              'target-arrow-color': 'red',
+              'source-arrow-color': 'red'
+            }
+          },
+
+          {
+            selector: '.eh-ghost-edge.eh-preview-active',
+            style: {
+              'opacity': 0
+            }
+          }
+
         ],
       },
-      []
+      [edges, nodes]
     );
 
     // forDrow
-    var eh = cs.edgehandles();
+    var eh = cs.edgehandles({
+      snap: false, //for not auto connect
+    });
 
     cs.edges().on("click", function (e) {
       var ele = e.target;
@@ -71,11 +101,12 @@ const Cytoscape = () => {
       setPostionOfCircle.style.left = x + "px";
       setPostionOfCircle.style.top = y + "px";
       setPostionOfCircle.style.color = "blue";
-      console.log("clicked " + ele.id(), ele, elements);
+      console.log("clicked " + ele.id(), ele);
     });
 
     document.querySelector("#draw-on").addEventListener("click", () => {
       eh.enableDrawMode();
+      // enableDrawMode
     });
 
     //for removing only edge
@@ -97,7 +128,9 @@ const Cytoscape = () => {
       const row = Math.floor(i / 4);
       return { x: col * 100, y: row * 100 };
     });
-  }, [elements]);
+
+    console.log(cs.data);
+  }, [nodes, edges]);
 
   return (
     <>
