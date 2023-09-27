@@ -55,33 +55,32 @@ const Cytoscape = () => {
           },
 
           {
-            selector: 'edge',
+            selector: "edge",
             style: {
-              'curve-style': "straight" , // select style
-              'target-arrow-shape': "triangle" // arrow
-            }
+              "curve-style": "straight", // select style
+              "target-arrow-shape": "triangle", // arrow
+            },
           },
 
           {
-            selector: '.eh-preview, .eh-ghost-edge',
+            selector: ".eh-preview, .eh-ghost-edge",
             style: {
-              'background-color': 'red',
-              'line-color': 'red',
-              'target-arrow-color': 'red',
-              'source-arrow-color': 'red'
-            }
+              "background-color": "red",
+              "line-color": "red",
+              "target-arrow-color": "red",
+              "source-arrow-color": "red",
+            },
           },
 
           {
-            selector: '.eh-ghost-edge.eh-preview-active',
+            selector: ".eh-ghost-edge.eh-preview-active",
             style: {
-              'opacity': 0
-            }
-          }
-
+              opacity: 0,
+            },
+          },
         ],
       },
-      [edges, nodes]
+      [nodes, edges]
     );
 
     // forDrow
@@ -89,6 +88,8 @@ const Cytoscape = () => {
       snap: false, //for not auto connect
     });
 
+  //on edge line click ---
+  
     cs.edges().on("click", function (e) {
       var ele = e.target;
       const setPostionOfCircle = document.querySelector("#remveEdge");
@@ -104,23 +105,22 @@ const Cytoscape = () => {
       console.log("clicked " + ele.id(), ele);
     });
 
+
+  // ==> drow mood
     document.querySelector("#draw-on").addEventListener("click", () => {
       eh.enableDrawMode();
-      // enableDrawMode
-    });
-
-    //for removing only edge
-    document.querySelector("#remove-edge").addEventListener("click", () => {
-      if (eh.enableDrawMode) {
-        eh.disableDrawMode();
-      }
-      cs.edges(":selected").remove();
     });
 
     // ==> remove edge on icon click;
     document.querySelector("#remveEdge").addEventListener("click", () => {
+      const edgeInfo = cs.edges(":selected").data();
+      const selectedEdge = {data:edgeInfo};
+      // const updateEdges = edges.filter((ed) =>  ed?.data?.id !== selectedEdge?.data?.id);
       cs.edges(":selected").remove();
+      // setEdge(updateEdges);
+      setEdge((prev)=> prev.filter((ed)=> ed?.data?.id !== selectedEdge?.data?.id))
       document.querySelector("#remveEdge").style.display = "none";
+      console.log({edges});
     });
 
     cs.nodes().positions(function (ele, i) {
@@ -128,9 +128,7 @@ const Cytoscape = () => {
       const row = Math.floor(i / 4);
       return { x: col * 100, y: row * 100 };
     });
-
-    console.log(cs.data);
-  }, [nodes, edges]);
+  }, [edges , nodes]);
 
   return (
     <>
@@ -172,7 +170,6 @@ const Cytoscape = () => {
         <button style={{ margin: "10px" }} id="draw-on">
           Add edges{" "}
         </button>
-        <button id="remove-edge">remove edges</button>
       </div>
     </>
   );
