@@ -6,7 +6,7 @@ import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
 cytoscape.use(edgehandles);
 const Cytoscape = () => {
-  const [nodes, setnodes] = useState([
+  const [nodes, setNodes] = useState([
     { data: { id: "a", name: "Dilshad" } },
     { data: { id: "b" } },
     { data: { id: "c" } },
@@ -83,48 +83,45 @@ const Cytoscape = () => {
       [nodes, edges]
     );
 
-    // forDrow
+  // start :) 
+
     var eh = cs.edgehandles({
       snap: false, //for not auto connect
     });
 
-  //on edge line click ---
-  
-    cs.edges().on("click", function (e) {
+  //on edge line click ---> 
+    cs.edges().on("click",(e)=> {
       var ele = e.target;
-      const setPostionOfCircle = document.querySelector("#remveEdge");
-      setPostionOfCircle.style.display = "block";
+      const setPositionOfCircle = document.querySelector("#remveEdge");
+      setPositionOfCircle.style.display = "block";
       const bbCache = ele.boundingBox();
       const x = (bbCache.x1 + bbCache.x2) / 2;
       const y = (bbCache.y1 + bbCache.y2) / 2;
 
       // Set position of the circle
-      setPostionOfCircle.style.left = x + "px";
-      setPostionOfCircle.style.top = y + "px";
-      setPostionOfCircle.style.color = "blue";
+      setPositionOfCircle.style.left = x + "px";
+      setPositionOfCircle.style.top = y + "px";
+      setPositionOfCircle.style.color = "blue";
       console.log("clicked " + ele.id(), ele);
     });
 
-
-  // ==> drow mood
+    // ==> drow mood on button clikc 
     document.querySelector("#draw-on").addEventListener("click", () => {
       eh.enableDrawMode();
-
     });
 
-  // == update state on add 
-    cs.on('ehcomplete', (event, sourceNode, targetNode, addedEles) => {
-        const newEdge = {data:{source:sourceNode?.id() ,  target:targetNode?.id()}};
-        setEdge((prevEdge)=> [...prevEdge, newEdge]);
+    // == update state on add
+    // cs.edges = for multi add at one time
+    cs.on("ehcomplete", (event, sourceNode, targetNode, addedEles) => {
+      const newEdge = {data: { source: sourceNode?.id(), target: targetNode?.id() }};
+      setEdge((prevEdge) => [...prevEdge, newEdge]);
     });
-  
 
     // ==> remove edge on icon click;
     document.querySelector("#remveEdge").addEventListener("click", () => {
-      const edgeInfo = cs.edges(":selected").data();
-      const selectedEdge = {data:edgeInfo};
+      const selectedEdge = cs.edges(":selected").data();
       cs.edges(":selected").remove();
-      setEdge((prev)=> prev.filter((ed)=> ed?.data?.id !== selectedEdge?.data?.id))
+      setEdge((prev) => prev.filter((ed) => ed?.data?.id !== selectedEdge?.id));
       document.querySelector("#remveEdge").style.display = "none";
     });
 
@@ -134,13 +131,11 @@ const Cytoscape = () => {
     //   return { x: col * 100, y: row * 100 };
     // });
 
+  }, [edges, nodes]);
 
-  }, [edges , nodes]);
-
-
-  useEffect(()=>{
-    console.log({edges});
-  },[edges,nodes])
+  useEffect(() => {
+    console.log({ edges });
+  }, [edges, nodes]);
 
   return (
     <>
