@@ -109,26 +109,38 @@ const Cytoscape = () => {
   // ==> drow mood
     document.querySelector("#draw-on").addEventListener("click", () => {
       eh.enableDrawMode();
+
     });
+
+  // == update state on add 
+    cs.on('ehcomplete', (event, sourceNode, targetNode, addedEles) => {
+        const newEdge = {data:{source:sourceNode?.id() ,  target:targetNode?.id()}};
+        setEdge((prevEdge)=> [...prevEdge, newEdge]);
+    });
+  
 
     // ==> remove edge on icon click;
     document.querySelector("#remveEdge").addEventListener("click", () => {
       const edgeInfo = cs.edges(":selected").data();
       const selectedEdge = {data:edgeInfo};
-      // const updateEdges = edges.filter((ed) =>  ed?.data?.id !== selectedEdge?.data?.id);
       cs.edges(":selected").remove();
-      // setEdge(updateEdges);
       setEdge((prev)=> prev.filter((ed)=> ed?.data?.id !== selectedEdge?.data?.id))
       document.querySelector("#remveEdge").style.display = "none";
-      console.log({edges});
     });
 
-    cs.nodes().positions(function (ele, i) {
-      const col = i % 4;
-      const row = Math.floor(i / 4);
-      return { x: col * 100, y: row * 100 };
-    });
+    // cs.nodes().positions(function (ele, i) {
+    //   const col = i % 4;
+    //   const row = Math.floor(i / 4);
+    //   return { x: col * 100, y: row * 100 };
+    // });
+
+
   }, [edges , nodes]);
+
+
+  useEffect(()=>{
+    console.log({edges});
+  },[edges,nodes])
 
   return (
     <>
